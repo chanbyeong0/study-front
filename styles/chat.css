@@ -1,0 +1,153 @@
+/* 채팅 컨테이너 */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+/* 랜딩 히어로 카드 */
+.hero-card {
+    display: block;
+    padding: 2rem;
+    border-radius: 15px;
+    color: white !important;
+    text-decoration: none !important;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    transform: translateY(0);
+    transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.hero-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    filter: saturate(1.05);
+}
+
+.hero-card h2 {
+    margin: 0;
+    color: white;
+}
+
+.hero-card p {
+    margin: 1rem 0;
+    opacity: 0.9;
+}
+
+.hero-card ul {
+    margin: 1rem 0;
+    padding-left: 1.2rem;
+}
+
+.hero-card .card-cta {
+    margin-top: 0.75rem;
+    font-weight: 700;
+}
+
+/* 메시지 행 */
+.message-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.message-row.user {
+    justify-content: flex-end;
+}
+
+.message-row.assistant {
+    justify-content: flex-start;
+}
+
+/* 아바타 */
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.avatar.user {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.avatar.assistant {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+/* 채팅 버블 */
+.chat-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 18px;
+    max-width: 70%;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.chat-bubble.user {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.assistant {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #e9ecef;
+    border-bottom-left-radius: 4px;
+}
+
+/* 메시지 정보 */
+.message-info {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    text-align: center;
+}
+
+/* 음성 인디케이터 */
+.voice-indicator {
+    font-size: 0.8rem;
+    color: #28a745;
+    margin-left: 0.5rem;
+}
+
+/* 타이핑 인디케이터 */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 2px;
+}
+
+.typing-dots span {
+    width: 4px;
+    height: 4px;
+    background: #6c757d;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 60%, 100% { opacity: 0.3; }
+    30% { opacity: 1; }
+} 

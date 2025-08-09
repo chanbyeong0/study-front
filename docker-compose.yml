@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      # 필요 시 외부 스프링 부트 백엔드 주소로 수정
+      BACKEND_URL: "http://host.docker.internal:8080"
+    volumes:
+      - .:/app
+    restart: unless-stopped 
