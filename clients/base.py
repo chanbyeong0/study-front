@@ -37,6 +37,14 @@ class BackendClient:
         res.raise_for_status()
         return res.json()
 
+    def delete(self, path: str, **kwargs: Any) -> dict[str, Any]:
+        res = self.session.delete(self._url(path), timeout=_DEFAULT_TIMEOUT, **kwargs)
+        res.raise_for_status()
+        # 204 No Content 또는 본문이 비어있을 때는 빈 dict 반환
+        if res.status_code == 204 or not res.content:
+            return {}
+        return res.json()
+
 
 # 싱글톤 클라이언트 인스턴스 (전역 재사용)
 client = BackendClient() 

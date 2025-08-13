@@ -7,7 +7,7 @@
 """
 from __future__ import annotations
 
-from .rooms import create_room, reset_room, get_room, delete_room  # noqa: F401
+from .rooms import create_room, reset_room, get_room, delete_room, list_rooms  # noqa: F401
 from .messages import get_history, send_message, health  # noqa: F401
 
 __all__: list[str] = [
@@ -18,4 +18,5 @@ __all__: list[str] = [
     "send_message",
     "get_history",
     "health",
+    "list_rooms",
 ] 

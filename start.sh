@@ -13,9 +13,21 @@ if [[ "$MODE" == "docker" ]]; then
   docker compose up --build
 else
   echo "[INFO] 로컬 가상환경/의존성 설치 후 Streamlit 실행…"
-  python -m venv .venv
+  # 우선 python3 사용, 없으면 python 시도
+  if command -v python3 >/dev/null 2>&1; then
+    PY_BIN=python3
+  elif command -v python >/dev/null 2>&1; then
+    PY_BIN=python
+  else
+    echo "[ERROR] Python이 설치되어 있지 않습니다. Homebrew가 있다면: brew install python"
+    exit 1
+  fi
+
+  "$PY_BIN" -m venv .venv
   source .venv/bin/activate
-  pip install --upgrade pip
-  pip install -r requirements.txt
-  streamlit run app.py
+  # venv 활성화 후에는 venv의 python 고정 사용
+  python -m pip install --upgrade pip
+  python -m pip install -r requirements.txt
+  # 환경변수 BACKEND_URL이 설정되어 있으면 그것을 사용
+  python -m streamlit run app.py
 fi 

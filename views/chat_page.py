@@ -86,7 +86,12 @@ def render() -> None:
             if isinstance(messages, list):
                 normalized: list[dict[str, str]] = []
                 for m in messages:
-                    role = m.get("role") or ("assistant" if m.get("speaker") == "assistant" else "user")
+                    raw_role = m.get("role") or ("assistant" if m.get("speaker") == "assistant" else "user")
+                    # ENUM(대문자)이나 기타 값도 안전하게 소문자로 정규화
+                    role = str(raw_role).lower()
+                    if role not in ("user", "assistant"):
+                        # 백엔드가 USER/ASSISTANT 같은 Enum이면 매핑
+                        role = "assistant" if "assist" in role else ("user" if "user" in role else role)
                     content = m.get("content", "")
                     if role in ("user", "assistant") and content:
                         normalized.append({"role": role, "content": content})

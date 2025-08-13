@@ -1,11 +1,30 @@
 from __future__ import annotations
 
 import streamlit as st
-from clients import create_room
+from clients import create_room, list_rooms
 
 def render() -> None:
     """방/캐릭터 선택 화면을 그립니다."""
     st.header("💬 대화할 역사적 인물을 선택하세요")
+
+    with st.expander("내 방 목록 보기", expanded=False):
+        rooms = list_rooms()
+        if not rooms:
+            st.caption("현재 생성된 방이 없습니다.")
+        else:
+            for r in rooms:
+                raw_id = r.get("roomId") or r.get("id") or r.get("_id")
+                room_id = str(raw_id)
+                character = r.get("character", "?")
+                col_a, col_b = st.columns([4,1])
+                with col_a:
+                    st.write(f"🗂️ {character} - {room_id}")
+                with col_b:
+                    if st.button("입장", key=f"enter-{room_id}"):
+                        st.session_state.room_id = room_id
+                        st.session_state.character = character
+                        st.session_state.messages = []
+                        st.switch_page("pages/2_채팅.py")
 
     # 캐릭터 선택을 카드 형태로
     col1, col2 = st.columns(2)
