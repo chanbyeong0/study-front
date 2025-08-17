@@ -81,8 +81,6 @@ st.markdown(f"""
     margin-bottom: 2rem;
 ">
     <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
-        <img src="{_img_src('image/einstein.jpg')}" alt="einstein" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.7);" />
-        <img src="{_img_src('image/Trump.jpg')}" alt="trump" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.7);" />
         <h1 style="font-size: 3rem; margin: 0; color: white;">AI 역사 인물 채팅</h1>
     </div>
     <p style="font-size: 1.3rem; margin: 1rem 0 0 0; opacity: 0.9;">역사 속 거장들과 실시간으로 대화해보세요</p>
@@ -90,14 +88,12 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # 인물 소개 카드 (카드 자체가 링크로 동작)
-col1, col2 = st.columns(2)
+col1, col2 = st.columns(2, gap="large")
 
 with col1:
     st.markdown(
         f"""
-        <a class="hero-card" href="?character=einstein" style="
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
-        ">
+        <a class="hero-card" href="?character=einstein" style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);">
             <div style="display:flex;align-items:center;gap:10px;">
                 <img src="{_img_src('image/einstein.jpg')}" alt="einstein" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
                 <h2>알버트 아인슈타인</h2>
@@ -117,9 +113,7 @@ with col1:
 with col2:
     st.markdown(
         f"""
-        <a class="hero-card" href="?character=trump" style="
-            background: linear-gradient(135deg, #FF9800 0%, #f57c00 100%);
-        ">
+        <a class="hero-card" href="?character=trump" style="background: linear-gradient(135deg, #FF9800 0%, #f57c00 100%);">
             <div style="display:flex;align-items:center;gap:10px;">
                 <img src="{_img_src('image/Trump.jpg')}" alt="trump" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
                 <h2>도널드 트럼프</h2>

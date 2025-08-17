@@ -8,7 +8,9 @@
 
 /* 랜딩 히어로 카드 */
 .hero-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     padding: 2rem;
     border-radius: 15px;
     color: white !important;
@@ -17,6 +19,7 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
     transform: translateY(0);
     transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    min-height: 260px; /* 카드 규격 통일 */
 }
 
 .hero-card:hover {
