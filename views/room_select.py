@@ -129,51 +129,27 @@ def render() -> None:
         if not rooms:
             st.caption("현재 생성된 방이 없습니다.")
         else:
-            # 리스트 아이템 스타일
-            st.markdown(
-                """
-                <style>
-                .room-item { 
-                    display:flex; align-items:center; gap:12px; 
-                    padding:10px 12px; border:1px solid rgba(255,255,255,0.08); 
-                    border-radius:10px; margin-bottom:8px; 
-                    background: rgba(255,255,255,0.03);
-                }
-                .room-item:hover { background: rgba(255,255,255,0.06); }
-                .room-thumb { width:36px; height:36px; border-radius:50%; object-fit:cover; object-position:center; }
-                .room-meta { display:flex; flex-direction:column; }
-                .room-name { font-weight:700; }
-                .room-id { opacity:0.7; font-size:0.85rem; }
-                </style>
-                """,
-                unsafe_allow_html=True,
-            )
             for r in rooms:
                 raw_id = r.get("roomId") or r.get("id") or r.get("_id")
                 room_id = str(raw_id)
                 character = r.get("character", "?")
                 img_path = EINSTEIN_IMG_PATH if character == "아인슈타인" else TRUMP_IMG_PATH
 
-                col1, col2, col3 = st.columns([1,6,1])
-                with col1:
-                    st.markdown(
-                        f"<img class='room-thumb' src='{_img_src(img_path)}' alt='{character}' />",
-                        unsafe_allow_html=True,
-                    )
-                with col2:
+                left, right = st.columns([8, 1])
+                with left:
                     st.markdown(
                         f"""
-                        <div class="room-item">
-                            <img class="room-thumb" src="{_img_src(img_path)}" alt="{character}" />
-                            <div class="room-meta">
-                                <div class="room-name">{character}</div>
-                                <div class="room-id">ID: {room_id}</div>
+                        <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:10px;border:1px solid #e9ecef;border-radius:10px;background:#ffffff;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                            <img src="{_img_src(img_path)}" alt="{character}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center;" />
+                            <div>
+                                <div style="font-weight:700;color:#212529;">{character}</div>
+                                <div style="color:#6c757d;font-size:0.85rem;">ID: {room_id}</div>
                             </div>
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
-                with col3:
+                with right:
                     if st.button("입장", key=f"enter-bottom-{room_id}"):
                         st.session_state.room_id = room_id
                         st.session_state.character = character
