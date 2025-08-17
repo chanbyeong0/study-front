@@ -1,5 +1,7 @@
 import streamlit as st
 from clients import create_room
+import base64
+from pathlib import Path
 
 st.set_page_config(
     page_title="AI 역사 인물 채팅",
@@ -28,6 +30,17 @@ def load_css(path: str):
 # 외부 스타일 파일 적용
 load_css("styles/chat.css")
 
+def _img_src(path: str) -> str:
+    try:
+        p = Path(path)
+        if not p.exists():
+            return ""
+        mime = "image/jpeg" if p.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
+        b64 = base64.b64encode(p.read_bytes()).decode("utf-8")
+        return f"data:{mime};base64,{b64}"
+    except Exception:
+        return ""
+
 # 카드 클릭(쿼리 파라미터) 처리: ?character=einstein|trump → 방 생성 후 채팅 페이지로 이동
 _slug_to_character = {
     "einstein": "아인슈타인",
@@ -55,12 +68,10 @@ if raw_param:
             st.error(f"방 생성 실패: {exc}")
             st.stop()
 
-# 이미 방이 존재하면 홈에 들어왔을 때 자동으로 채팅 페이지로 이동
-if st.session_state.get("room_id") and not raw_param:
-    st.switch_page("pages/2_채팅.py")
+# 홈 화면은 언제든 접근 가능하도록 자동 리다이렉트 제거
 
 # 메인 홈 화면 - 모던한 랜딩 페이지 컨셉
-st.markdown("""
+st.markdown(f"""
 <div style="
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 3rem 2rem;
@@ -69,7 +80,11 @@ st.markdown("""
     color: white;
     margin-bottom: 2rem;
 ">
-    <h1 style="font-size: 3rem; margin: 0; color: white;">💬 AI 역사 인물 채팅</h1>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+        <img src="{_img_src('image/einstein.jpg')}" alt="einstein" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.7);" />
+        <img src="{_img_src('image/Trump.jpg')}" alt="trump" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.7);" />
+        <h1 style="font-size: 3rem; margin: 0; color: white;">AI 역사 인물 채팅</h1>
+    </div>
     <p style="font-size: 1.3rem; margin: 1rem 0 0 0; opacity: 0.9;">역사 속 거장들과 실시간으로 대화해보세요</p>
 </div>
 """, unsafe_allow_html=True)
@@ -79,11 +94,14 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown(
-        """
+        f"""
         <a class="hero-card" href="?character=einstein" style="
             background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
         ">
-            <h2>🧠 알버트 아인슈타인</h2>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{_img_src('image/einstein.jpg')}" alt="einstein" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
+                <h2>알버트 아인슈타인</h2>
+            </div>
             <p>상대성이론의 아버지</p>
             <ul>
                 <li>물리학과 우주에 대한 깊이 있는 토론</li>
@@ -98,11 +116,14 @@ with col1:
 
 with col2:
     st.markdown(
-        """
+        f"""
         <a class="hero-card" href="?character=trump" style="
             background: linear-gradient(135deg, #FF9800 0%, #f57c00 100%);
         ">
-            <h2>🇺🇸 도널드 트럼프</h2>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{_img_src('image/Trump.jpg')}" alt="trump" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />
+                <h2>도널드 트럼프</h2>
+            </div>
             <p>제45대 미국 대통령</p>
             <ul>
                 <li>리더십과 비즈니스 전략</li>

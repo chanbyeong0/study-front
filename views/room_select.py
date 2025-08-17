@@ -2,10 +2,54 @@ from __future__ import annotations
 
 import streamlit as st
 from clients import create_room, list_rooms
+import base64
+from pathlib import Path
+
+EINSTEIN_IMG_PATH = "image/einstein.jpg"
+TRUMP_IMG_PATH = "image/Trump.jpg"
+
+def _img_src(path: str) -> str:
+    try:
+        file_path = Path(path)
+        if not file_path.exists():
+            return ""
+        mime = "image/jpeg" if file_path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
+        b64 = base64.b64encode(file_path.read_bytes()).decode("utf-8")
+        return f"data:{mime};base64,{b64}"
+    except Exception:
+        return ""
 
 def render() -> None:
     """방/캐릭터 선택 화면을 그립니다."""
     st.header("💬 대화할 역사적 인물을 선택하세요")
+
+    # 카드 공통 스타일 주입
+    st.markdown(
+        """
+        <style>
+        .char-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        }
+        .char-card img {
+            width: 160px; height: 160px;
+            border-radius: 50%;
+            object-fit: cover; object-position: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .char-card .name { font-size: 1.1rem; font-weight: 700; }
+        .char-card .desc { font-size: 0.9rem; opacity: 0.8; text-align: center; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     with st.expander("내 방 목록 보기", expanded=False):
         rooms = list_rooms()
@@ -30,7 +74,17 @@ def render() -> None:
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("🧑‍🔬 아인슈타인", use_container_width=True, type="primary"):
+        st.markdown(
+            f"""
+            <div class=\"char-card\">
+                <img src=\"{_img_src(EINSTEIN_IMG_PATH)}\" alt=\"einstein\" />
+                <div class=\"name\">알버트 아인슈타인</div>
+                <div class=\"desc\">상대성이론의 아버지</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("아인슈타인", use_container_width=True, type="primary"):
             # 바로 방 생성하고 채팅으로 이동
             try:
                 with st.spinner("아인슈타인과의 대화방을 생성하고 있습니다..."):
@@ -52,7 +106,17 @@ def render() -> None:
         """)
     
     with col2:
-        if st.button("🇺🇸 트럼프", use_container_width=True, type="primary"):
+        st.markdown(
+            f"""
+            <div class=\"char-card\">
+                <img src=\"{_img_src(TRUMP_IMG_PATH)}\" alt=\"trump\" />
+                <div class=\"name\">도널드 트럼프</div>
+                <div class=\"desc\">제45대 미국 대통령</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        if st.button("트럼프", use_container_width=True, type="primary"):
             # 바로 방 생성하고 채팅으로 이동
             try:
                 with st.spinner("트럼프와의 대화방을 생성하고 있습니다..."):

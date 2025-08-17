@@ -3,6 +3,23 @@ from __future__ import annotations
 import streamlit as st
 from clients import send_message, reset_room, get_history
 
+import base64
+from pathlib import Path
+
+EINSTEIN_IMG_PATH = "image/einstein.jpg"
+TRUMP_IMG_PATH = "image/Trump.jpg"
+
+def _img_src(path: str) -> str:
+    try:
+        file_path = Path(path)
+        if not file_path.exists():
+            return ""
+        mime = "image/jpeg" if file_path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
+        b64 = base64.b64encode(file_path.read_bytes()).decode("utf-8")
+        return f"data:{mime};base64,{b64}"
+    except Exception:
+        return ""
+
 
 
 def _render_messages() -> None:
@@ -19,21 +36,21 @@ def _render_messages() -> None:
             
             # 메시지 타입에 따른 정보
             if role == "user":
-                avatar = "👤"
                 name = "나"
+                avatar_html = f'<div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#667eea,#764ba2);"></div>'
             else:
                 if st.session_state.character == "아인슈타인":
-                    avatar = "🧠"
                     name = "아인슈타인"
+                    avatar_html = f'<img src="{_img_src(EINSTEIN_IMG_PATH)}" alt="einstein" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center;" />'
                 else:
-                    avatar = "🇺🇸"
                     name = "트럼프"
+                    avatar_html = f'<img src="{_img_src(TRUMP_IMG_PATH)}" alt="trump" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center;" />'
             
             # 채팅 버블 스타일링
             if role == "user":
                 # 사용자 메시지 (오른쪽 정렬)
                 st.markdown(
-                    f"""<div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                    f"""<div style="display: flex; justify-content: flex-end; margin-bottom: 1rem; gap: 8px;">
                         <div style="
                             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                             color: white;
@@ -42,10 +59,11 @@ def _render_messages() -> None:
                             max-width: 70%;
                             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
                         ">
-                            <div style="font-size: 14px; margin-bottom: 4px; opacity: 0.8;">나</div>
+                            <div style="font-size: 14px; margin-bottom: 4px; opacity: 0.8;">{name}</div>
                             <div>{content}</div>
                         </div>
-                    </div>""", 
+                        <div style="display:flex;align-items:flex-end;">{avatar_html}</div>
+                    </div>""",
                     unsafe_allow_html=True
                 )
             else:
@@ -54,7 +72,8 @@ def _render_messages() -> None:
                 border_color = "#d4edda" if st.session_state.character == "아인슈타인" else "#ffeaa7"
                 
                 st.markdown(
-                    f"""<div style="display: flex; justify-content: flex-start; margin-bottom: 1rem;">
+                    f"""<div style="display: flex; justify-content: flex-start; margin-bottom: 1rem; gap: 8px;">
+                        <div style="display:flex;align-items:flex-end;">{avatar_html}</div>
                         <div style="
                             background: {bg_color};
                             color: #333;
@@ -64,10 +83,10 @@ def _render_messages() -> None:
                             max-width: 70%;
                             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                         ">
-                            <div style="font-size: 14px; margin-bottom: 4px; font-weight: 600;">{avatar} {name}</div>
+                            <div style="font-size: 14px; margin-bottom: 4px; font-weight: 600;">{name}</div>
                             <div>{content}</div>
                         </div>
-                    </div>""", 
+                    </div>""",
                     unsafe_allow_html=True
                 )
 
@@ -104,11 +123,11 @@ def render() -> None:
     # 캐릭터별 컨셉 설정
     if st.session_state.character == "아인슈타인":
         theme_color = "#4CAF50"
-        header_emoji = "🧠"
+        header_img = _img_src(EINSTEIN_IMG_PATH)
         description = "상대성이론의 아버지와의 과학적 대화"
     else:  # 트럼프
         theme_color = "#FF9800"
-        header_emoji = "🇺🇸"
+        header_img = _img_src(TRUMP_IMG_PATH)
         description = "제45대 미국 대통령과의 정치・경영 토론"
 
     # 헤더 (컨셉에 맞는 디자인)
@@ -120,7 +139,10 @@ def render() -> None:
             margin-bottom: 1rem;
             color: white;
         ">
-            <h1 style="margin: 0; color: white;">{header_emoji} {st.session_state.character}</h1>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <img src="{header_img}" alt="{st.session_state.character}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;object-position:center;border:2px solid rgba(255,255,255,0.7);" />
+                <h1 style="margin: 0; color: white;">{st.session_state.character}</h1>
+            </div>
             <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">{description}</p>
         </div>""", 
         unsafe_allow_html=True
@@ -176,7 +198,16 @@ def render() -> None:
 
     # 사이드바에 캐릭터 정보 및 추천 질문
     with st.sidebar:
-        st.markdown(f"### {header_emoji} {st.session_state.character}")
+        sidebar_img = _img_src(EINSTEIN_IMG_PATH) if st.session_state.character == "아인슈타인" else _img_src(TRUMP_IMG_PATH)
+        st.markdown(
+            f"""
+            <div style="display:flex;align-items:center;gap:10px;">
+                <img src="{sidebar_img}" alt="{st.session_state.character}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" />
+                <h3 style="margin:0;">{st.session_state.character}</h3>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
         
         if st.session_state.character == "아인슈타인":
             st.markdown("""
