@@ -51,24 +51,7 @@ def render() -> None:
         unsafe_allow_html=True,
     )
 
-    with st.expander("내 방 목록 보기", expanded=False):
-        rooms = list_rooms()
-        if not rooms:
-            st.caption("현재 생성된 방이 없습니다.")
-        else:
-            for r in rooms:
-                raw_id = r.get("roomId") or r.get("id") or r.get("_id")
-                room_id = str(raw_id)
-                character = r.get("character", "?")
-                col_a, col_b = st.columns([4,1])
-                with col_a:
-                    st.write(f"🗂️ {character} - {room_id}")
-                with col_b:
-                    if st.button("입장", key=f"enter-{room_id}"):
-                        st.session_state.room_id = room_id
-                        st.session_state.character = character
-                        st.session_state.messages = []
-                        st.switch_page("pages/2_채팅.py")
+    # 상단 목록은 제거하고, 하단에 기본 펼침 리스트로 제공
 
     # 캐릭터 선택을 카드 형태로
     col1, col2 = st.columns(2)
@@ -138,4 +121,61 @@ def render() -> None:
         """)
     
     st.divider()
-    st.info("💡 인물을 선택하면 바로 대화방이 생성되고 채팅 페이지로 이동합니다!") 
+    st.info("💡 인물을 선택하면 바로 대화방이 생성되고 채팅 페이지로 이동합니다!")
+
+    # 하단: 내 방 목록 (펼친 상태의 리스트)
+    with st.expander("내 방 목록 보기", expanded=True):
+        rooms = list_rooms()
+        if not rooms:
+            st.caption("현재 생성된 방이 없습니다.")
+        else:
+            # 리스트 아이템 스타일
+            st.markdown(
+                """
+                <style>
+                .room-item { 
+                    display:flex; align-items:center; gap:12px; 
+                    padding:10px 12px; border:1px solid rgba(255,255,255,0.08); 
+                    border-radius:10px; margin-bottom:8px; 
+                    background: rgba(255,255,255,0.03);
+                }
+                .room-item:hover { background: rgba(255,255,255,0.06); }
+                .room-thumb { width:36px; height:36px; border-radius:50%; object-fit:cover; object-position:center; }
+                .room-meta { display:flex; flex-direction:column; }
+                .room-name { font-weight:700; }
+                .room-id { opacity:0.7; font-size:0.85rem; }
+                </style>
+                """,
+                unsafe_allow_html=True,
+            )
+            for r in rooms:
+                raw_id = r.get("roomId") or r.get("id") or r.get("_id")
+                room_id = str(raw_id)
+                character = r.get("character", "?")
+                img_path = EINSTEIN_IMG_PATH if character == "아인슈타인" else TRUMP_IMG_PATH
+
+                col1, col2, col3 = st.columns([1,6,1])
+                with col1:
+                    st.markdown(
+                        f"<img class='room-thumb' src='{_img_src(img_path)}' alt='{character}' />",
+                        unsafe_allow_html=True,
+                    )
+                with col2:
+                    st.markdown(
+                        f"""
+                        <div class="room-item">
+                            <img class="room-thumb" src="{_img_src(img_path)}" alt="{character}" />
+                            <div class="room-meta">
+                                <div class="room-name">{character}</div>
+                                <div class="room-id">ID: {room_id}</div>
+                            </div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                with col3:
+                    if st.button("입장", key=f"enter-bottom-{room_id}"):
+                        st.session_state.room_id = room_id
+                        st.session_state.character = character
+                        st.session_state.messages = []
+                        st.switch_page("pages/2_채팅.py")
