@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import streamlit as st
 from clients import create_room, list_rooms
+from clients.rooms import delete_room
 import base64
 from pathlib import Path
 
@@ -22,6 +23,8 @@ def _img_src(path: str) -> str:
 def render() -> None:
     """방/캐릭터 선택 화면을 그립니다."""
     st.header("💬 대화할 역사적 인물을 선택하세요")
+    if "confirm_delete_room_id" not in st.session_state:
+        st.session_state.confirm_delete_room_id = None
 
     # 카드 공통 스타일 주입
     st.markdown(
@@ -135,7 +138,7 @@ def render() -> None:
                 character = r.get("character", "?")
                 img_path = EINSTEIN_IMG_PATH if character == "아인슈타인" else TRUMP_IMG_PATH
 
-                left, right = st.columns([8, 1])
+                left, mid, right = st.columns([7, 1, 1])
                 with left:
                     st.markdown(
                         f"""
@@ -149,9 +152,28 @@ def render() -> None:
                         """,
                         unsafe_allow_html=True,
                     )
+                with mid:
+                    if st.button("삭제", key=f"delete-room-{room_id}", type="secondary"):
+                        st.session_state.confirm_delete_room_id = room_id
                 with right:
                     if st.button("입장", key=f"enter-bottom-{room_id}"):
                         st.session_state.room_id = room_id
                         st.session_state.character = character
                         st.session_state.messages = []
                         st.switch_page("pages/2_채팅.py")
+
+                if st.session_state.confirm_delete_room_id == room_id:
+                    st.warning("정말 이 방을 삭제하시겠습니까? 되돌릴 수 없습니다.")
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        if st.button("삭제 확정", key=f"confirm-delete-{room_id}"):
+                            try:
+                                delete_room(room_id)
+                                st.session_state.confirm_delete_room_id = None
+                                st.success("삭제되었습니다")
+                                st.rerun()
+                            except Exception as exc:
+                                st.error(f"삭제 실패: {exc}")
+                    with c2:
+                        if st.button("취소", key=f"cancel-delete-{room_id}"):
+                            st.session_state.confirm_delete_room_id = None
